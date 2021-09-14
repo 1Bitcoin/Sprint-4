@@ -1,5 +1,4 @@
 import com.google.gson.Gson
-import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -25,18 +24,22 @@ class ClientServiceTest {
     @MethodSource("fail save client - bad email data set")
     fun `fail save client - bad email`(sourcePath: String) {
         val client = getClientFromJson(sourcePath)
-        assertThrows<ValidationException> {
+        val exception = assertThrows<ValidationException> {
             clientService.saveClient(client)
         }
+
+        assertEquals(exception.errorCode[0], ErrorCode.INVALID_EMAIL)
     }
 
     @ParameterizedTest
     @MethodSource("fail save client - bad snils data set")
     fun `fail save client - bad snils`(sourcePath: String) {
         val client = getClientFromJson(sourcePath)
-        assertThrows<ValidationException> {
+        val exception = assertThrows<ValidationException> {
             clientService.saveClient(client)
         }
+
+        assertEquals(exception.errorCode[0], ErrorCode.INVALID_SNILS)
     }
 
     @ParameterizedTest
@@ -46,19 +49,23 @@ class ClientServiceTest {
         val exception = assertFailsWith<ValidationException> {
             clientService.saveClient(client)
         }
+
         assertEquals(exception.errorCode[0], ErrorCode.NULL_VALUE)
-        assertEquals(exception.errorCode[1], ErrorCode.INVALID_LONG)
+        assertEquals(exception.errorCode[1], ErrorCode.INVALID_NAME)
         assertEquals(exception.errorCode[2], ErrorCode.INVALID_LONG)
         assertEquals(exception.errorCode[3], ErrorCode.INVALID_EMAIL)
         assertEquals(exception.errorCode[4], ErrorCode.INVALID_SNILS)
     }
 
-    @Test
-    fun `fail save client - bad phone`() {
-        val client = getClientFromJson("/fail/user_with_bad_phone.json")
-        assertThrows<ValidationException> {
+    @ParameterizedTest
+    @MethodSource("fail save client - bad phone data set")
+    fun `fail save client - bad phone`(sourcePath: String) {
+        val client = getClientFromJson(sourcePath)
+        val exception = assertThrows<ValidationException> {
             clientService.saveClient(client)
         }
+
+        assertEquals(exception.errorCode[0], ErrorCode.INVALID_PHONE)
     }
 
     private fun getClientFromJson(fileName: String): Client = this::class.java.getResource(fileName)
@@ -89,6 +96,11 @@ class ClientServiceTest {
         fun `fail save client - all data corrupted data set`() = listOf(
             Arguments.of("/fail/user_all_data_corrupted.json"),
             Arguments.of("/fail/user_data_corrupted.json")
+        )
+
+        @JvmStatic
+        fun `fail save client - bad phone data set`() = listOf(
+            Arguments.of("/fail/user_with_bad_phone.json"),
         )
     }
 }
