@@ -15,10 +15,9 @@ fun <T> countGreaterThan(anArray: Array<T>, elem: T): Int where T : Comparable<T
 class Sorter<T> where T: Comparable<T> {
 
     val list: MutableList<T> = mutableListOf()
-    private var insertionPoint = 0
 
     fun add(value: T) {
-        insertionPoint = if (list.contains(value))
+        val insertionPoint = if (list.contains(value))
             list.binarySearch(value)
         else
             -list.binarySearch(value) - 1
