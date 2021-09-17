@@ -2,7 +2,7 @@ package ru.sber.functional
 
 class StudentsGroup {
 
-    lateinit var students: List<Student>
+    private lateinit var students: List<Student>
 
     fun filterByPredicate(pred: (Student) -> Boolean): List<Student> {
         if (this::students.isInitialized) {
@@ -10,5 +10,9 @@ class StudentsGroup {
         }
 
         return emptyList()
+    }
+
+    fun init (sourceStudentList: List<Student>) {
+        students = sourceStudentList
     }
 }
